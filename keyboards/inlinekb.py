@@ -24,3 +24,8 @@ main_menu.row(
 main_menu.row(types.InlineKeyboardButton(
     text="Find a companion", callback_data='search')
 )
+
+setting_kb = InlineKeyboardBuilder()
+setting_kb.add(types.InlineKeyboardButton(text='Change Level', callback_data='change_level'))
+setting_kb.add(types.InlineKeyboardButton(text='Change About', callback_data='change_about'))
+setting_kb.row(types.InlineKeyboardButton(text='Back', callback_data='menu'))

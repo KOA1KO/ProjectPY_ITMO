@@ -1,5 +1,5 @@
 from aiogram import Router, F, Bot
-from aiogram.filters import Command, StateFilter
+from aiogram.filters import Command, StateFilter, CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.state import State, StatesGroup
@@ -47,7 +47,7 @@ async def show_inline_menu(call: CallbackQuery, state: FSMContext):
 
 @router.callback_query(StateFilter(ProfileStatesGroup.level))
 async def show_inline_menu(call: CallbackQuery, state: FSMContext):
-    await state.update_data(lvl=call.data)
+    await state.update_data(level=call.data)
     await call.message.answer(text="To begin with, send me a picture of yourself. \n(It will be shown to everyone)" +
                                    "\n___\n" + '<tg-spoiler>Для начала пришлите мне свою фотографию. \n(Она будет '
                                                'показана всем)</tg-spoiler>',
@@ -109,9 +109,8 @@ async def load_desc(message: Message, state: FSMContext, bot: Bot):
     await create_profile(user_id)
     data = await state.get_data()
     await bot.send_photo(chat_id=message.from_user.id,
-                         level=data['lvl'],
                          photo=data['photo'],
-                         caption=f"<b>{data['name']}</b>, {data['age']}\n<i>{data['description']}</i>",
+                         caption=f"<b>{data['name']}</b>, {data['age']}\n{data['level']}\n<i>{data['description']}</i>",
                          parse_mode='HTML')
 
     await edit_profile(state, user_id=message.from_user.id)
@@ -122,18 +121,18 @@ async def load_desc(message: Message, state: FSMContext, bot: Bot):
 
 
 @router.callback_query(F.data == 'profile')
-async def cmd_profile(message: Message, bot: Bot):
-    user_id = message.from_user.id
+async def cmd_profile(call: CallbackQuery, bot: Bot):
+    user_id = call.from_user.id
     profile = await get_profile(user_id)
-
     if profile:
-        photo, name, age, description = profile
-        await bot.send_photo(chat_id=message.from_user.id,
+        await call.message.delete()
+        level, photo, name, age, description = profile
+        await bot.send_photo(chat_id=call.from_user.id,
                              photo=photo,
-                             caption=f"<b>{name}</b>, {age}\n<i>{description}</i>",
-                             parse_mode='HTML')
+                             caption=f"<b>{name}</b>, {age}\n{level}\n<i>{description}</i>",
+                             parse_mode='HTML', reply_markup=to_menu.as_markup())
     else:
-        await message.answer(
+        await call.message.answer(
             text='Profile not found. Please register first.' + "\n___\n" + '<tg-spoiler>Профиль не найден. '
                                                                            'Пожалуйста, зарегистрируйтесь '
                                                                            'сначала.</tg-spoiler>',

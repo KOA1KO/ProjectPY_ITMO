@@ -4,14 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="36e07173-1f52-4414-9a1b-f3e45a48bc3b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/keyboards/inlinekb.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/keyboards/keyboard.py" afterDir="false" />
+    <list default="true" id="36e07173-1f52-4414-9a1b-f3e45a48bc3b" name="Changes" comment="update aiogram to 3.7.0 version">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/data/base.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/inlinekb.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/keyboards.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/states/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/states/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/keyboards/inlinekb.py" beforeDir="false" afterPath="$PROJECT_DIR$/keyboards/inlinekb.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/states/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/states/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/states/register.py" beforeDir="false" afterPath="$PROJECT_DIR$/states/register.py" afterDir="false" />
     </list>
@@ -215,7 +212,18 @@
       <workItem from="1718201334466" duration="4004000" />
       <workItem from="1718207675243" duration="633000" />
       <workItem from="1718208314309" duration="17665000" />
+      <workItem from="1718259652159" duration="378000" />
+      <workItem from="1718304164676" duration="7723000" />
     </task>
+    <task id="LOCAL-00001" summary="update aiogram to 3.7.0 version">
+      <option name="closed" value="true" />
+      <created>1718259820033</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1718259820033</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -232,6 +240,10 @@
       </map>
     </option>
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="update aiogram to 3.7.0 version" />
+    <option name="LAST_COMMIT_MESSAGE" value="update aiogram to 3.7.0 version" />
+  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/translate_py$translate.coverage" NAME="translate Coverage Results" MODIFIED="1718027254914" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/pythonProject$translate.coverage" NAME="translate Coverage Results" MODIFIED="1717944567330" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -239,7 +251,7 @@
     <SUITE FILE_PATH="coverage/translate_py$config.coverage" NAME="config Coverage Results" MODIFIED="1718027247065" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/pythonProject$main.coverage" NAME="main Coverage Results" MODIFIED="1717781979791" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/translate_py$app.coverage" NAME="app Coverage Results" MODIFIED="1718202747031" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/pythonProject$app.coverage" NAME="app Coverage Results" MODIFIED="1718225963940" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="C:\Users\KOA1KO\Рабочий стол\pythonProject" />
+    <SUITE FILE_PATH="coverage/pythonProject$app.coverage" NAME="app Coverage Results" MODIFIED="1718312769944" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="C:\Users\KOA1KO\Рабочий стол\pythonProject" />
     <SUITE FILE_PATH="coverage/translate_py$register.coverage" NAME="register Coverage Results" MODIFIED="1718027630694" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/states" />
     <SUITE FILE_PATH="coverage/pythonProject$telebot.coverage" NAME="telebot Coverage Results" MODIFIED="1717784875826" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>

@@ -9,7 +9,7 @@ async def db_start():
         await db.execute("""
             CREATE TABLE IF NOT EXISTS profile(
                 user_id TEXT PRIMARY KEY, 
-                lvl TEXT,
+                level TEXT,
                 photo TEXT, 
                 age TEXT, 
                 description TEXT, 
@@ -26,7 +26,7 @@ async def create_profile(user_id):
             user = await cursor.fetchone()
             if not user:
                 await db.execute(
-                    "INSERT INTO profile (user_id, lvl, photo, age, description, name) VALUES(?, ?, ?, ?, ?, ?)",
+                    "INSERT INTO profile (user_id, level, photo, age, description, name) VALUES(?, ?, ?, ?, ?, ?)",
                     (user_id, '', '', '', '', ''))
                 await db.commit()
                 print(f"Profile created for user {user_id}.")
@@ -37,9 +37,9 @@ async def edit_profile(state, user_id):
         data = await state.get_data()
         await db.execute("""
             UPDATE profile 
-            SET lvl = ?, photo = ?, age = ?, description = ?, name = ?
+            SET level = ?, photo = ?, age = ?, description = ?, name = ?
             WHERE user_id = ?
-        """, (data['lvl'], data['photo'], data['age'], data['description'], data['name'], user_id))
+        """, (data['level'], data['photo'], data['age'], data['description'], data['name'], user_id))
         await db.commit()
         print(f"Profile updated for user {user_id}.")
 
@@ -53,6 +53,6 @@ async def isRegistered(user_id):
 
 async def get_profile(user_id):
     async with aiosqlite.connect(DATABASE_PATH) as db:
-        async with db.execute("SELECT lvl, photo, name, age, description FROM profile WHERE user_id = ?",
+        async with db.execute("SELECT level, photo, name, age, description FROM profile WHERE user_id = ?",
                               (user_id,)) as cursor:
             return await cursor.fetchone()

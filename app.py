@@ -1,14 +1,14 @@
 import asyncio
 
-from aiogram import Bot, Dispatcher, types, Router
-from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram.types import BotCommand
+from aiogram import Bot, Dispatcher
 from aiogram.filters import CommandStart
+from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.types import BotCommand, Message
 
-from states.register import router
+from keyboards.inlinekb import reg_menu
+from states import register, main, router
 
 from config import BOT_TOKEN
-from keyboards.inlinekb import reg_menu
 
 from data.base import db_start
 
@@ -17,7 +17,7 @@ dp = Dispatcher(storage=MemoryStorage())
 
 
 @router.message(CommandStart())
-async def cmd_start(message: types.Message):
+async def cmd_start(message: Message):
     await message.answer(
         text='''Hi! Our bot is designed to keep your English proficiency up to date. You can use it to '''
              '''communicate with other people who speak English at your level and above. Let's '''
@@ -30,17 +30,16 @@ async def cmd_start(message: types.Message):
         reply_markup=reg_menu.as_markup())
 
 
-async def main():
+async def start():
     await db_start()
     await bot.set_my_commands([
         BotCommand(command="start", description="Start the bot"),
     ])
-    dp.include_router(router)
+    dp.include_routers(register.router, main.router)
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 
 
 if __name__ == "__main__":
     print("Start")
-    asyncio.run(main())
-
+    asyncio.run(start())
