@@ -1,4 +1,4 @@
-from .register import dp
-from .main import dp
+from .register import router
+from .main import router
 
-__all__ = ['dp']
+__all__ = ['router']

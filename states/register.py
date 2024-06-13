@@ -1,124 +1,128 @@
-from app import dp, bot
-
-from aiogram import types
-from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters.state import StatesGroup, State
+from aiogram import Router, F, Bot
+from aiogram.filters import Command, StateFilter
+from aiogram.fsm.context import FSMContext
+from aiogram.types import Message, CallbackQuery
+from aiogram.fsm.state import State, StatesGroup
 
 from data.base import edit_profile, get_profile, create_profile, isRegistered
+from keyboards.inlinekb import main_menu, reg_menu, levels, to_menu
+from keyboards.keyboard import get_cancel_kb
 
-from inlinekb import main_menu
-from keyboards import get_kb, get_cancel_kb
+router = Router()
 
 
 class ProfileStatesGroup(StatesGroup):
+    level = State()
     photo = State()
     name = State()
     age = State()
     description = State()
 
 
-@dp.message_handler(commands=['cancel'], state='*')
-async def cmd_cancel(message: types.Message, state: FSMContext):
+@router.message(Command("cancel"), StateFilter(ProfileStatesGroup()))
+async def cmd_cancel(message: Message, state: FSMContext):
     if state is None:
         return
 
-    await state.finish()
+    await state.clear()
     await message.reply('Вы прервали создание анкеты!',
-                        reply_markup=get_kb())
+                        reply_markup=reg_menu.as_markup())
 
 
-@dp.message_handler(commands=['reg'], state='*')
-async def cmd_cancel(message: types.Message):
-    user_id = message.from_user.id
+@router.callback_query(F.data == 'register', StateFilter(None))
+async def show_inline_menu(call: CallbackQuery, state: FSMContext):
+    user_id = call.from_user.id
     if await isRegistered(user_id):
-        await message.answer(
-            text="You are already registered!" + "\n___\n" +
-                 '<tg-spoiler>Вы уже зарегистрированы!</tg-spoiler>',
-            parse_mode='HTML'
-        )
+        await call.message.answer("You are already registered!" + "\n___\n" +
+                                  '<tg-spoiler>Вы уже зарегистрированы!</tg-spoiler>', parse_mode='HTML',
+                                  reply_markup=main_menu.as_markup())
     else:
-        await create_profile(user_id)
-        await message.answer(
-            text="Let's create your profile! To begin with, send me your photo. \n(It will be shown to everyone)" +
-                 "\n___\n" + '<tg-spoiler>Давайте создадим ваш профиль! Для начала пришлите мне свою фотографию. (Она '
-                             'будет показана всем)</tg-spoiler>', parse_mode='HTML', reply_markup=get_cancel_kb())
-        await ProfileStatesGroup.photo.set()  # установили состояние фото
+        await call.message.answer(
+            text="Let's create your profile! First, choose your level of English.\n" +
+                 "\n___\n" + '<tg-spoiler>Давайте создадим ваш профиль! Для начала выберите свой уровень знания '
+                             'английского языка.</tg-spoiler>',
+            parse_mode='HTML', reply_markup=levels.as_markup())
+        await state.set_state(ProfileStatesGroup.level)
 
 
-@dp.message_handler(commands=['edit_profile'], state='*')
-async def cmd_cancel(message: types.Message):
-    user_id = message.from_user.id
-    await create_profile(user_id)
-    await message.answer(
-        text="Let's create edit your profile! Choose what do you want to change." +
-             "\n___\n" + '<tg-spoiler>Давайте создадим ваш профиль! Для начала пришлите мне свою фотографию. (Она '
-                         'будет показана всем)</tg-spoiler>', parse_mode='HTML', reply_markup=get_cancel_kb())
-    await ProfileStatesGroup.photo.set()  # установили состояние фото
+@router.callback_query(StateFilter(ProfileStatesGroup.level))
+async def show_inline_menu(call: CallbackQuery, state: FSMContext):
+    await state.update_data(lvl=call.data)
+    await call.message.answer(text="To begin with, send me a picture of yourself. \n(It will be shown to everyone)" +
+                                   "\n___\n" + '<tg-spoiler>Для начала пришлите мне свою фотографию. \n(Она будет '
+                                               'показана всем)</tg-spoiler>',
+                              parse_mode='HTML', reply_markup=get_cancel_kb)
+    await state.set_state(ProfileStatesGroup.photo)
 
 
-@dp.message_handler(lambda message: not message.photo, state=ProfileStatesGroup.photo)
-async def check_photo(message: types.Message):
+@router.message(lambda message: not message.photo, StateFilter(ProfileStatesGroup.photo))
+async def check_photo(message: Message):
     await message.reply(text="That's not a photo." + "\n___\n" + '<tg-spoiler>Это не фото</tg-spoiler>',
-                        parse_mode='HTML', reply_markup=get_cancel_kb())
+                        parse_mode='HTML', reply_markup=get_cancel_kb)
 
 
-@dp.message_handler(content_types=['photo'], state=ProfileStatesGroup.photo)
-async def load_photo(message: types.Message, state: FSMContext) -> None:
-    async with state.proxy() as data:
-        data['photo'] = message.photo[0].file_id
+@router.message(lambda message: message.photo, StateFilter(ProfileStatesGroup.photo))
+async def load_photo(message: Message, state: FSMContext):
+    await state.update_data(photo=message.photo[0].file_id)
     await message.answer(text='Send me your first name (It will be shown to everyone)' + "\n___\n" +
                               '<tg-spoiler>Пришлите мне свое имя (оно будет показано всем)</tg-spoiler>',
-                         parse_mode='HTML', reply_markup=get_cancel_kb())
-    await ProfileStatesGroup.next()
+                         parse_mode='HTML', reply_markup=get_cancel_kb)
+    await state.set_state(ProfileStatesGroup.name)
 
 
-@dp.message_handler(lambda message: not message.text.isdigit() or float(message.text) > 100,
-                    state=ProfileStatesGroup.age)
-async def check_age(message: types.Message):
-    await message.reply(text="That's not a real age!" + "\n___\n" + '<tg-spoiler>Это не фото</tg-spoiler>',
-                        parse_mode='HTML', reply_markup=get_cancel_kb())
+@router.message(lambda message: not message.text.isdigit() or float(message.text) > 100,
+                StateFilter(ProfileStatesGroup.age))
+async def check_age(message: Message):
+    await message.reply(
+        text="That's not a real age!" + "\n___\n" + '<tg-spoiler>Это не настоящий возраст!</tg-spoiler>',
+        parse_mode='HTML', reply_markup=get_cancel_kb)
 
 
-@dp.message_handler(state=ProfileStatesGroup.name)
-async def load_name(message: types.Message, state: FSMContext) -> None:
-    async with state.proxy() as data:
-        data['name'] = message.text
-
+@router.message(StateFilter(ProfileStatesGroup.name))
+async def load_name(message: Message, state: FSMContext):
+    await state.update_data(name=message.text)
     await message.answer(
-        text='How old are you? (Your age will be shown to everyone)' + "\n___\n" + '<tg-spoiler>Это не фото</tg-spoiler>',
-        parse_mode='HTML', reply_markup=get_cancel_kb())
-    await ProfileStatesGroup.next()
+        text='How old are you? (Your age will be shown to everyone)' + "\n___\n" + '<tg-spoiler>Сколько вам лет? (Ваш '
+                                                                                   'возраст будет показан '
+                                                                                   'всем)</tg-spoiler>',
+        parse_mode='HTML', reply_markup=get_cancel_kb)
+    await state.set_state(ProfileStatesGroup.age)
 
 
-@dp.message_handler(state=ProfileStatesGroup.age)
-async def load_age(message: types.Message, state: FSMContext) -> None:
-    async with state.proxy() as data:
-        data['age'] = message.text
-
+@router.message(StateFilter(ProfileStatesGroup.age))
+async def load_age(message: Message, state: FSMContext):
+    await state.update_data(age=message.text)
     await message.answer(
-        text='Tell me something about you (your hobbies or maybe phobias)' + "\n___\n" + '<tg-spoiler>Это не фото</tg-spoiler>',
-        parse_mode='HTML', reply_markup=get_cancel_kb())
-    await ProfileStatesGroup.next()
+        text='Tell me something about yourself (your hobbies or maybe phobias).' + "\n___\n" + '<tg-spoiler'
+                                                                                               '>Расскажите мне'
+                                                                                               'что-нибудь о себе (твои'
+                                                                                               'хобби или, может быть, '
+                                                                                               'фобии).</tg-spoiler>',
+        parse_mode='HTML', reply_markup=get_cancel_kb)
+    await state.set_state(ProfileStatesGroup.description)
 
 
-@dp.message_handler(state=ProfileStatesGroup.description)
-async def load_desc(message: types.Message, state: FSMContext) -> None:
-    async with state.proxy() as data:
-        data['description'] = message.text
-        data['user_id'] = message.from_user.id
-        await bot.send_photo(chat_id=message.from_user.id,
-                             photo=data['photo'],
-                             caption=f"<b>{data['name']}</b>, {data['age']}\n<i>{data['description']}</i>",
-                             parse_mode='HTML')
+@router.message(StateFilter(ProfileStatesGroup.description))
+async def load_desc(message: Message, state: FSMContext, bot: Bot):
+    user_id = message.from_user.id
+    await state.update_data(description=message.text)
+    await create_profile(user_id)
+    data = await state.get_data()
+    await bot.send_photo(chat_id=message.from_user.id,
+                         level=data['lvl'],
+                         photo=data['photo'],
+                         caption=f"<b>{data['name']}</b>, {data['age']}\n<i>{data['description']}</i>",
+                         parse_mode='HTML')
 
     await edit_profile(state, user_id=message.from_user.id)
-    await message.answer(text='Your profile is registered!' + "\n___\n" + '<tg-spoiler>Это не фото</tg-spoiler>',
-                         parse_mode='HTML')
-    await state.finish()
+    await state.clear()
+    await message.answer(
+        text='Your profile is registered!' + "\n___\n" + '<tg-spoiler>Ваш профиль зарегистрирован</tg-spoiler>',
+        parse_mode='HTML', reply_markup=to_menu.as_markup())
 
 
-@dp.message_handler(commands=['profile'])
-async def cmd_profile(message: types.Message):
+@router.callback_query(F.data == 'profile')
+async def cmd_profile(message: Message, bot: Bot):
     user_id = message.from_user.id
     profile = await get_profile(user_id)
 
@@ -130,5 +134,7 @@ async def cmd_profile(message: types.Message):
                              parse_mode='HTML')
     else:
         await message.answer(
-            text='Profile not found. Please register first.' + "\n___\n" + '<tg-spoiler>Профиль не найден. Пожалуйста, зарегистрируйтесь сначала.</tg-spoiler>',
-            parse_mode='HTML')
+            text='Profile not found. Please register first.' + "\n___\n" + '<tg-spoiler>Профиль не найден. '
+                                                                           'Пожалуйста, зарегистрируйтесь '
+                                                                           'сначала.</tg-spoiler>',
+            parse_mode='HTML', reply_markup=to_menu.as_markup())
