@@ -6,7 +6,7 @@ from aiogram.fsm.state import State, StatesGroup
 
 from data.base import edit_profile, get_profile, create_profile, isRegistered
 from keyboards.inlinekb import main_menu, reg_menu, levels, to_menu
-from keyboards.keyboard import get_cancel_kb
+from keyboards.keyboard import cancel_kb
 
 router = Router()
 
@@ -35,7 +35,7 @@ async def show_inline_menu(call: CallbackQuery, state: FSMContext):
     if await isRegistered(user_id):
         await call.message.answer("You are already registered!" + "\n___\n" +
                                   '<tg-spoiler>Вы уже зарегистрированы!</tg-spoiler>', parse_mode='HTML',
-                                  reply_markup=main_menu.as_markup())
+                                  reply_markup=main_menu.as_markup(resize_keyboard=True))
     else:
         await call.message.answer(
             text="Let's create your profile! First, choose your level of English.\n" +
@@ -51,14 +51,14 @@ async def show_inline_menu(call: CallbackQuery, state: FSMContext):
     await call.message.answer(text="To begin with, send me a picture of yourself. \n(It will be shown to everyone)" +
                                    "\n___\n" + '<tg-spoiler>Для начала пришлите мне свою фотографию. \n(Она будет '
                                                'показана всем)</tg-spoiler>',
-                              parse_mode='HTML', reply_markup=get_cancel_kb)
+                              parse_mode='HTML', reply_markup=cancel_kb.as_markup(resize_keyboard=True))
     await state.set_state(ProfileStatesGroup.photo)
 
 
 @router.message(lambda message: not message.photo, StateFilter(ProfileStatesGroup.photo))
 async def check_photo(message: Message):
     await message.reply(text="That's not a photo." + "\n___\n" + '<tg-spoiler>Это не фото</tg-spoiler>',
-                        parse_mode='HTML', reply_markup=get_cancel_kb)
+                        parse_mode='HTML', reply_markup=cancel_kb.as_markup(resize_keyboard=True))
 
 
 @router.message(lambda message: message.photo, StateFilter(ProfileStatesGroup.photo))
@@ -66,7 +66,7 @@ async def load_photo(message: Message, state: FSMContext):
     await state.update_data(photo=message.photo[0].file_id)
     await message.answer(text='Send me your first name (It will be shown to everyone)' + "\n___\n" +
                               '<tg-spoiler>Пришлите мне свое имя (оно будет показано всем)</tg-spoiler>',
-                         parse_mode='HTML', reply_markup=get_cancel_kb)
+                         parse_mode='HTML', reply_markup=cancel_kb.as_markup(resize_keyboard=True))
     await state.set_state(ProfileStatesGroup.name)
 
 
@@ -75,7 +75,7 @@ async def load_photo(message: Message, state: FSMContext):
 async def check_age(message: Message):
     await message.reply(
         text="That's not a real age!" + "\n___\n" + '<tg-spoiler>Это не настоящий возраст!</tg-spoiler>',
-        parse_mode='HTML', reply_markup=get_cancel_kb)
+        parse_mode='HTML', reply_markup=cancel_kb.as_markup(resize_keyboard=True))
 
 
 @router.message(StateFilter(ProfileStatesGroup.name))
@@ -85,7 +85,7 @@ async def load_name(message: Message, state: FSMContext):
         text='How old are you? (Your age will be shown to everyone)' + "\n___\n" + '<tg-spoiler>Сколько вам лет? (Ваш '
                                                                                    'возраст будет показан '
                                                                                    'всем)</tg-spoiler>',
-        parse_mode='HTML', reply_markup=get_cancel_kb)
+        parse_mode='HTML', reply_markup=cancel_kb.as_markup(resize_keyboard=True))
     await state.set_state(ProfileStatesGroup.age)
 
 
@@ -98,7 +98,7 @@ async def load_age(message: Message, state: FSMContext):
                                                                                                'что-нибудь о себе (твои'
                                                                                                'хобби или, может быть, '
                                                                                                'фобии).</tg-spoiler>',
-        parse_mode='HTML', reply_markup=get_cancel_kb)
+        parse_mode='HTML', reply_markup=cancel_kb.as_markup(resize_keyboard=True))
     await state.set_state(ProfileStatesGroup.description)
 
 

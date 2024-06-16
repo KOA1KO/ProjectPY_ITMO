@@ -1,6 +1,8 @@
-from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
+from aiogram import types
+from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-cancel_kb = [
-    [KeyboardButton(text="/cancel")]
-]
-get_cancel_kb = ReplyKeyboardMarkup(keyboard=cancel_kb, resize_keyboard=True)
+skip_companion = ReplyKeyboardBuilder()
+skip_companion.add(types.KeyboardButton(text='Quit the conversation'))
+
+cancel_kb = ReplyKeyboardBuilder()
+cancel_kb.add(types.KeyboardButton(text='/cancel'))

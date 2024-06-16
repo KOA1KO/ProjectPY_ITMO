@@ -5,10 +5,8 @@ auth_key = deepl_api_key
 translator = deepl.Translator(auth_key)
 
 
-async def transfer(text):
-    result = translator.translate_text(text=text, target_lang="RU")
+def trans(text: str) -> str:
+    res = translator.translate_text(text, target_lang="RU")
+    result = text + "\n___\n" + f'<tg-spoiler>{res}</tg-spoiler>'
     return result
 
-
-async def form(text):
-    return text + "\n___\n" + f'<tg-spoiler>{transfer(text)}</tg-spoiler>'

@@ -1,3 +1,5 @@
+import random
+
 import aiosqlite
 import os
 
@@ -14,21 +16,24 @@ async def db_start():
                 photo TEXT, 
                 age TEXT, 
                 description TEXT, 
-                name TEXT
+                name TEXT,
+                is_searching INTEGER DEFAULT 0,
+                chatting_with INTEGER DEFAULT None
             )
         """)
         await db.commit()
         print("Database and table created successfully.")
 
 
-async def create_profile(user_id):
+async def create_profile(user_id, level='', photo='', age='', description='', name='', is_searching=0,
+                         chatting_with=None):
     async with aiosqlite.connect(DATABASE_PATH) as db:
         async with db.execute("SELECT 1 FROM profile WHERE user_id = ?", (user_id,)) as cursor:
             user = await cursor.fetchone()
             if not user:
                 await db.execute(
-                    "INSERT INTO profile (user_id, level, photo, age, description, name) VALUES(?, ?, ?, ?, ?, ?)",
-                    (user_id, '', '', '', '', ''))
+                    "INSERT INTO profile (user_id, level, photo, age, description, name, is_searching, chatting_with) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    (user_id, level, photo, age, description, name, is_searching, chatting_with))
                 await db.commit()
                 print(f"Profile created for user {user_id}.")
 
@@ -40,9 +45,11 @@ async def edit_profile(state, user_id):
             UPDATE profile 
             SET level = ?, photo = ?, age = ?, description = ?, name = ?
             WHERE user_id = ?
-        """, (data['level'], data['photo'], data['age'], data['description'], data['name'], user_id))
+        """, (
+            data['level'], data['photo'], data['age'], data['description'], data['name'], user_id))
         await db.commit()
         print(f"Profile updated for user {user_id}.")
+        print((data['level'], data['photo'], data['age'], data['description'], data['name'], user_id))
 
 
 async def isRegistered(user_id):
@@ -59,20 +66,57 @@ async def get_profile(user_id):
             return await cursor.fetchone()
 
 
-async def search_inData(level, index):
+async def is_someone_searching(level, user_id):
     async with aiosqlite.connect(DATABASE_PATH) as db:
-        async with db.execute("SELECT user_id, level, photo, name, age, description FROM profile WHERE level = ? LIMIT 1 OFFSET ?", (level, index)) as cursor:
-            row = await cursor.fetchone()
-            if row:
-                return {
-                    'user_id': row[0],
-                    'level': row[1],
-                    'photo': row[2],
-                    'name': row[3],
-                    'age': row[4],
-                    'description': row[5]
-                }
+        async with db.execute(
+                "SELECT user_id, level, photo, name, age, description, is_searching FROM profile WHERE level = ? AND user_id != ? AND is_searching = 1",
+                (level, user_id,)) as cursor:
+            results = await cursor.fetchall()
+            if results:
+                return random.choice(results)
             else:
                 return None
 
 
+async def get_chatting_with_id(user_id):
+    async with aiosqlite.connect(DATABASE_PATH) as db:
+        async with db.execute("SELECT chatting_with FROM profile WHERE user_id = ?", (user_id,)) as cursor:
+            result = await cursor.fetchone()
+            if result:
+                other_user_id = result[0]  # Получаем значение из кортежа
+                print(f"{user_id} is chatting with user {other_user_id}.")
+                return other_user_id
+            else:
+                print(f"{user_id} is not chatting with anyone.")
+                return None
+
+
+async def update_is_searching(user_id, is_searching, with_who):
+    async with aiosqlite.connect(DATABASE_PATH) as db:
+        # Update the user
+        await db.execute("UPDATE profile SET is_searching = ?, chatting_with = ? WHERE user_id = ?",
+                         (is_searching, with_who, user_id))
+        await db.commit()
+        print(f"is_searching updated to {is_searching} for user {user_id}.")
+
+
+async def update_level(user_id, level):
+    async with aiosqlite.connect(DATABASE_PATH) as db:
+        await db.execute("""
+            UPDATE profile 
+            SET level = ?
+            WHERE user_id = ?
+        """, (level, user_id))
+        await db.commit()
+        print(f"Level updated to {level} for user {user_id}.")
+
+
+async def update_description(user_id, description):
+    async with aiosqlite.connect(DATABASE_PATH) as db:
+        await db.execute("""
+            UPDATE profile 
+            SET description = ?
+            WHERE user_id = ?
+        """, (description, user_id))
+        await db.commit()
+        print(f"Description updated to {description} for user {user_id}.")
