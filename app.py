@@ -1,33 +1,37 @@
 import asyncio
 
 from aiogram import Bot, Dispatcher
-from aiogram.filters import CommandStart
+from aiogram.filters import Command
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import BotCommand, Message
 
-from keyboards.inlinekb import reg_menu
+from keyboards.inlinekb import reg_menu, main_menu
 from states import register, main, router
 
 from config import BOT_TOKEN
 
-from data.base import db_start
+from data.base import db_start, isRegistered
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher(storage=MemoryStorage())
 
 
-@router.message(CommandStart())
+@router.message(Command("start"))
 async def cmd_start(message: Message):
-    await message.answer(
-        text='''Hi! Our bot is designed to keep your English proficiency up to date. You can use it to '''
-             '''communicate with other people who speak English at your level and above. Let's '''
-             '''register your profile! You can use the button "Register" to create your profile''' + "\n___\n" +
-             '''<tg-spoiler>Привет! Наш бот создан для того, чтобы поддерживать ваш уровень владения '''
-             '''английским языком на должном уровне. С его помощью вы можете общаться с другими '''
-             '''людьми, владеющими английским на вашем уровне и выше. Давайте зарегистрируем ваш '''
-             '''профиль! Ты можешь  чтобы создать свой профиль.</tg-spoiler>''',
-        parse_mode='HTML',
-        reply_markup=reg_menu.as_markup())
+    user_id = message.from_user.id
+    if await isRegistered(user_id):
+        await message.answer("Main menu", reply_markup=main_menu.as_markup())
+    else:
+        await message.answer(
+            text='''Hi! Our bot is designed to keep your English proficiency up to date. You can use it to '''
+                 '''communicate with other people who speak English at your level and above. Let's '''
+                 '''register your profile! You can use the button "Register" to create your profile''' + "\n___\n" +
+                 '''<tg-spoiler>Привет! Наш бот создан для того, чтобы поддерживать ваш уровень владения '''
+                 '''английским языком на должном уровне. С его помощью вы можете общаться с другими '''
+                 '''людьми, владеющими английским на вашем уровне и выше. Давайте зарегистрируем ваш '''
+                 '''профиль! Ты можешь  чтобы создать свой профиль.</tg-spoiler>''',
+            parse_mode='HTML',
+            reply_markup=reg_menu.as_markup())
 
 
 async def start():

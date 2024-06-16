@@ -8,7 +8,8 @@ async def db_start():
     async with aiosqlite.connect(DATABASE_PATH) as db:
         await db.execute("""
             CREATE TABLE IF NOT EXISTS profile(
-                user_id TEXT PRIMARY KEY, 
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id TEXT, 
                 level TEXT,
                 photo TEXT, 
                 age TEXT, 
@@ -56,3 +57,22 @@ async def get_profile(user_id):
         async with db.execute("SELECT level, photo, name, age, description FROM profile WHERE user_id = ?",
                               (user_id,)) as cursor:
             return await cursor.fetchone()
+
+
+async def search_inData(level, index):
+    async with aiosqlite.connect(DATABASE_PATH) as db:
+        async with db.execute("SELECT user_id, level, photo, name, age, description FROM profile WHERE level = ? LIMIT 1 OFFSET ?", (level, index)) as cursor:
+            row = await cursor.fetchone()
+            if row:
+                return {
+                    'user_id': row[0],
+                    'level': row[1],
+                    'photo': row[2],
+                    'name': row[3],
+                    'age': row[4],
+                    'description': row[5]
+                }
+            else:
+                return None
+
+

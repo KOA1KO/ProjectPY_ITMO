@@ -1,20 +1,19 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram import types
 
-
 reg_menu = InlineKeyboardBuilder()
 reg_menu.add(types.InlineKeyboardButton(text='Register', callback_data='register'))
 
-
 levels = InlineKeyboardBuilder()
-levels.row(types.InlineKeyboardButton(text='A1\n(Beginner)', callback_data='A1'), types.InlineKeyboardButton(text='A2\n(Elementary)', callback_data='A2'))
-levels.row(types.InlineKeyboardButton(text='B1\n(Intermediate)', callback_data='B1'), types.InlineKeyboardButton(text='B2\n(Upper Intermediate)', callback_data='B2'))
-levels.row(types.InlineKeyboardButton(text='C1\n(Advanced)', callback_data='C1'), types.InlineKeyboardButton(text='C2\n(Proficiency)', callback_data='C2'))
-
+levels.row(types.InlineKeyboardButton(text='A1\n(Beginner)', callback_data='A1'),
+           types.InlineKeyboardButton(text='A2\n(Elementary)', callback_data='A2'))
+levels.row(types.InlineKeyboardButton(text='B1\n(Intermediate)', callback_data='B1'),
+           types.InlineKeyboardButton(text='B2\n(Upper Intermediate)', callback_data='B2'))
+levels.row(types.InlineKeyboardButton(text='C1\n(Advanced)', callback_data='C1'),
+           types.InlineKeyboardButton(text='C2\n(Proficiency)', callback_data='C2'))
 
 to_menu = InlineKeyboardBuilder()
 to_menu.add(types.InlineKeyboardButton(text='Main menu', callback_data='main'))
-
 
 main_menu = InlineKeyboardBuilder()
 main_menu.row(
@@ -28,4 +27,25 @@ main_menu.row(types.InlineKeyboardButton(
 setting_kb = InlineKeyboardBuilder()
 setting_kb.add(types.InlineKeyboardButton(text='Change Level', callback_data='change_level'))
 setting_kb.add(types.InlineKeyboardButton(text='Change About', callback_data='change_about'))
-setting_kb.row(types.InlineKeyboardButton(text='Back', callback_data='menu'))
+setting_kb.row(types.InlineKeyboardButton(text='Back', callback_data='main'))
+
+reg_levels = InlineKeyboardBuilder()
+reg_levels.row(types.InlineKeyboardButton(text='A1\n(Beginner)', callback_data='A1'),
+               types.InlineKeyboardButton(text='A2\n(Elementary)', callback_data='A2'))
+reg_levels.row(types.InlineKeyboardButton(text='B1\n(Intermediate)', callback_data='B1'),
+               types.InlineKeyboardButton(text='B2\n(Upper Intermediate)', callback_data='B2'))
+reg_levels.row(types.InlineKeyboardButton(text='C1\n(Advanced)', callback_data='C1'),
+               types.InlineKeyboardButton(text='C2\n(Proficiency)', callback_data='C2'))
+reg_levels.row(types.InlineKeyboardButton(text='Back', callback_data='main'))
+
+
+only_back = InlineKeyboardBuilder()
+only_back.add(types.InlineKeyboardButton(text='Back', callback_data='main'))
+
+
+def choose_activate_kb(i):
+    choose_kb = InlineKeyboardBuilder()
+    choose_kb.row(types.InlineKeyboardButton(text="Previous", callback_data=f"next_{i}"),
+                  types.InlineKeyboardButton(text="Next", callback_data=f"prev_{i}"))
+    choose_kb.row(types.InlineKeyboardButton(text="Choose", callback_data=f"choosen"), types.InlineKeyboardButton(text="Back", callback_data="main"))
+    return choose_kb
