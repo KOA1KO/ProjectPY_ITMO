@@ -109,14 +109,3 @@ async def update_level(user_id, level):
         """, (level, user_id))
         await db.commit()
         print(f"Level updated to {level} for user {user_id}.")
-
-
-async def update_description(user_id, description):
-    async with aiosqlite.connect(DATABASE_PATH) as db:
-        await db.execute("""
-            UPDATE profile 
-            SET description = ?
-            WHERE user_id = ?
-        """, (description, user_id))
-        await db.commit()
-        print(f"Description updated to {description} for user {user_id}.")

@@ -26,12 +26,12 @@ async def cmd_start(message: Message):
         await message.answer("Main menu", reply_markup=main_menu.as_markup())
     else:
         await message.answer(
-            text='''Hi! Our bot is designed to keep your English proficiency up to date. You can use it to communicate 
-            with other people who speak English at your level and above. Let's register your profile! You can use the 
-            button "Register" to create your profile\n___\n<tg-spoiler>Привет! Наш бот создан для того, чтобы поддерживать 
-            ваш уровень владения английским языком на должном уровне. С его помощью вы можете общаться с другими людьми, 
-            владеющими английским на вашем уровне и выше. Давайте зарегистрируем ваш профиль! Ты можешь  чтобы создать свой 
-            профиль.</tg-spoiler>''',
+            text='''Hi! Our bot is designed to keep your English proficiency up to date. You can use it to communicate '''
+            '''with other people who speak English at your level and above. Let's register your profile! You can use the ''' 
+            '''button "Register" to create your profile\n___\n<tg-spoiler>Привет! Наш бот создан для того, 
+            чтобы поддерживать ваш уровень владения английским языком на должном уровне. С его помощью вы можете 
+            общаться с другими людьми, владеющими английским на вашем уровне и выше. Давайте зарегистрируем ваш 
+            профиль! Вы можете использовать кнопку "Регистрация", чтобы создать свой профиль.</tg-spoiler>''',
             parse_mode='HTML',
             reply_markup=reg_menu.as_markup())
 

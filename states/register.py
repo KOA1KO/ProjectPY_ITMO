@@ -116,7 +116,7 @@ async def load_desc(message: Message, state: FSMContext, bot: Bot):
     await edit_profile(state, user_id=message.from_user.id)
     await state.clear()
     await message.answer(
-        text='Your profile is registered!' + "\n___\n" + '<tg-spoiler>Ваш профиль зарегистрирован</tg-spoiler>',
+        text='Your profile is registered!' + "\n___\n" + '<tg-spoiler>Ваш профиль зарегистрирован!</tg-spoiler>',
         parse_mode='HTML', reply_markup=to_menu.as_markup())
 
 
