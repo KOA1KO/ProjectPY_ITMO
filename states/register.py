@@ -95,7 +95,7 @@ async def load_age(message: Message, state: FSMContext):
     await message.answer(
         text='Tell me something about yourself (your hobbies or maybe phobias).' + "\n___\n" + '<tg-spoiler'
                                                                                                '>Расскажите мне'
-                                                                                               'что-нибудь о себе (твои'
+                                                                                               'что-нибудь о себе (твои '
                                                                                                'хобби или, может быть, '
                                                                                                'фобии).</tg-spoiler>',
         parse_mode='HTML', reply_markup=cancel_kb.as_markup(resize_keyboard=True))
